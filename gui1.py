@@ -35,14 +35,14 @@ source_text.pack(pady=5)
 
 # Source language selection
 Label(root, text="Select Source Language:", font=("Arial", 10), bg="#f0f0f0").pack()
-source_lang_var = StringVar(value="en")
-source_lang_menu = ttk.Combobox(root, textvariable=source_lang_var, values=list(LANGUAGES.keys()), state="readonly")
+source_lang_var = StringVar(value="english")
+source_lang_menu = ttk.Combobox(root, textvariable=source_lang_var, values=list(LANGUAGES.values()), state="readonly")
 source_lang_menu.pack()
 
 # Destination language selection
 Label(root, text="Select Destination Language:", font=("Arial", 10), bg="#f0f0f0").pack()
-dest_lang_var = StringVar(value="hi")
-dest_lang_menu = ttk.Combobox(root, textvariable=dest_lang_var, values=list(LANGUAGES.keys()), state="readonly")
+dest_lang_var = StringVar(value="hindi")
+dest_lang_menu = ttk.Combobox(root, textvariable=dest_lang_var, values=list(LANGUAGES.values()), state="readonly")
 dest_lang_menu.pack()
 
 # Translate button
