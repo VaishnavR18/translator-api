@@ -20,16 +20,16 @@ def home():
 
 @app.route('/translate', methods=['GET'])
 def translate_text():
-    # Get query parameters from the URL
-    source_language_name = request.args.get('source_language')
+    # The source language is always fixed to 'english'
+    source_language_name = 'english'  # Always translate from English
     target_language_name = request.args.get('target_language')
     text_to_translate = request.args.get('text_to_translate')
 
     # Check if the parameters are missing
-    if not source_language_name or not target_language_name or not text_to_translate:
+    if not target_language_name or not text_to_translate:
         return render_template('index.html', 
                                languages=list(LANGUAGES.values()), 
-                               error="Missing parameters. Please provide source_language, target_language, and text_to_translate.")
+                               error="Missing parameters. Please provide target_language and text_to_translate.")
 
     # Convert language names to language codes
     source_language = lang_names_to_codes.get(source_language_name)
