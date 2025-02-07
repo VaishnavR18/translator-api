@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            text-align: center;
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        select, textarea {
+            margin: 10px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result-text {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            width: 100%;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 5px;
+            font-size: 16px;
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Language Translator</h1>
+    <div class="container">
+        <form action="/translate" method="get">
+            <label for="source_language">Source Language:</label>
+            <select id="source_language" name="source_language" required>
+                {% for language in languages %}
+                    <option value="{{ language }}" {% if language == source_language %} selected {% endif %}>
+                        {{ language }}
+                    </option>
+                {% endfor %}
+            </select><br>
+
+            <label for="target_language">Target Language:</label>
+            <select id="target_language" name="target_language" required>
+                {% for language in languages %}
+                    <option value="{{ language }}" {% if language == target_language %} selected {% endif %}>
+                        {{ language }}
+                    </option>
+                {% endfor %}
+            </select><br>
+
+            <label for="text_to_translate">Enter Text:</label><br>
+            <textarea id="text_to_translate" name="text_to_translate" rows="4" required></textarea><br><br>
+
+            <button type="submit">Translate</button>
+        </form>
+
+        {% if translated_text %}
+            <label for="translated_text_area">Translation:</label>
+            <textarea id="translated_text_area" rows="4" readonly>{{ translated_text }}</textarea>
+        {% elif error %}
+            <div class="result-text error">
+                <strong>Error:</strong><br>
+                {{ error }}
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
