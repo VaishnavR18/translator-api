@@ -1,7 +1,7 @@
-import os
 from flask import Flask, render_template, request, jsonify, send_file
 from googletrans import Translator, LANGUAGES
 from gtts import gTTS
+import os
 
 app = Flask(__name__)
 
@@ -62,5 +62,4 @@ def translate_text():
                                error=f"Error: {str(e)}")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))  # Default to 10000 if no port is specified
-    app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=True)
