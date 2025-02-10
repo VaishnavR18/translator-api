@@ -1,57 +1,65 @@
-from flask import Flask, render_template, request
-from deep_translator import GoogleTranslator
+from flask import Flask, render_template, request, jsonify, send_file
+from googletrans import Translator, LANGUAGES
 from gtts import gTTS
 import os
-import time
-from gevent import monkey
-
-monkey.patch_all()  # Enables async processing
 
 app = Flask(__name__)
 
-# Language mapping
-languages = {
-    "english": "en",
-    "hindi": "hi",
-    "bengali": "bn",
-    "urdu": "ur",
-    "punjabi": "pa"
-}
+# Reverse the LANGUAGES dictionary to map language names to codes
+lang_names_to_codes = {v: k for k, v in LANGUAGES.items()}
 
 @app.route('/')
 def home():
-    return render_template('index.html', languages=languages.keys())
+    # Default languages (English as source and Hindi as target)
+    default_source_language = 'english'
+    default_target_language = 'hindi'
+
+    return render_template('index.html', 
+                           languages=list(LANGUAGES.values()), 
+                           source_language=default_source_language, 
+                           target_language=default_target_language)
 
 @app.route('/translate', methods=['GET'])
 def translate_text():
-    start_time = time.time()
+    # Get query parameters from the URL
+    source_language_name = request.args.get('source_language')
+    target_language_name = request.args.get('target_language')
+    text_to_translate = request.args.get('text_to_translate')
 
-    # Get query parameters
-    source_language = request.args.get('source_language', 'english').lower()
-    target_language = request.args.get('target_language', 'hindi').lower()
-    text_to_translate = request.args.get('text_to_translate', '')
+    if not source_language_name or not target_language_name or not text_to_translate:
+        return render_template('index.html', 
+                               languages=list(LANGUAGES.values()), 
+                               error="Missing parameters. Please provide source_language, target_language, and text_to_translate.")
 
-    if not text_to_translate:
-        return render_template('index.html', languages=languages.keys(), error="Please enter text.")
+    # Convert language names to language codes
+    source_language = lang_names_to_codes.get(source_language_name)
+    target_language = lang_names_to_codes.get(target_language_name)
 
-    if source_language not in languages or target_language not in languages:
-        return render_template('index.html', languages=languages.keys(), error="Invalid language.")
+    if not source_language or not target_language:
+        return render_template('index.html', 
+                               languages=list(LANGUAGES.values()), 
+                               error="Invalid language. Please provide valid language names.")
 
     try:
-        # Translation using deep_translator
-        translated_text = GoogleTranslator(source=languages[source_language], target=languages[target_language]).translate(text_to_translate)
+        translator = Translator()
+        translation = translator.translate(text_to_translate, src=source_language, dest=target_language)
 
         # Convert translated text to speech
+        tts = gTTS(text=translation.text, lang=target_language)
         audio_file = "static/translated_audio.mp3"
-        gTTS(text=translated_text, lang=languages[target_language]).save(audio_file)
+        tts.save(audio_file)
 
-        end_time = time.time()
-        print(f"Processing time: {end_time - start_time} seconds")
-
-        return render_template('index.html', languages=languages.keys(), translated_text=translated_text, audio_file=audio_file)
+        return render_template('index.html', 
+                               languages=list(LANGUAGES.values()), 
+                               translated_text=translation.text,
+                               audio_file=audio_file,  # Pass the audio file to the frontend
+                               source_language=source_language_name, 
+                               target_language=target_language_name)
 
     except Exception as e:
-        return render_template('index.html', languages=languages.keys(), error=f"Error: {str(e)}")
+        return render_template('index.html', 
+                               languages=list(LANGUAGES.values()), 
+                               error=f"Error: {str(e)}")
 
 if __name__ == "__main__":
     app.run(debug=True)
