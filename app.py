@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 from googletrans import Translator, LANGUAGES
+from gtts import gTTS
+import os
 
-# Create a Flask app
 app = Flask(__name__)
 
 # Reverse the LANGUAGES dictionary to map language names to codes
@@ -25,7 +26,6 @@ def translate_text():
     target_language_name = request.args.get('target_language')
     text_to_translate = request.args.get('text_to_translate')
 
-    # Check if the parameters are missing
     if not source_language_name or not target_language_name or not text_to_translate:
         return render_template('index.html', 
                                languages=list(LANGUAGES.values()), 
@@ -35,26 +35,28 @@ def translate_text():
     source_language = lang_names_to_codes.get(source_language_name)
     target_language = lang_names_to_codes.get(target_language_name)
 
-    # Check if invalid language was provided
     if not source_language or not target_language:
         return render_template('index.html', 
                                languages=list(LANGUAGES.values()), 
                                error="Invalid language. Please provide valid language names.")
 
     try:
-        # Perform translation
         translator = Translator()
         translation = translator.translate(text_to_translate, src=source_language, dest=target_language)
-        
-        # Return the translated text
+
+        # Convert translated text to speech
+        tts = gTTS(text=translation.text, lang=target_language)
+        audio_file = "static/translated_audio.mp3"
+        tts.save(audio_file)
+
         return render_template('index.html', 
                                languages=list(LANGUAGES.values()), 
-                               translated_text=translation.text, 
+                               translated_text=translation.text,
+                               audio_file=audio_file,  # Pass the audio file to the frontend
                                source_language=source_language_name, 
                                target_language=target_language_name)
 
     except Exception as e:
-        # Handle any translation errors
         return render_template('index.html', 
                                languages=list(LANGUAGES.values()), 
                                error=f"Error: {str(e)}")

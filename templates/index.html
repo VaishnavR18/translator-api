@@ -11,11 +11,9 @@
             text-align: center;
             padding: 50px;
         }
-
         h1 {
             color: #007bff;
         }
-
         .container {
             width: 50%;
             margin: 0 auto;
@@ -24,7 +22,6 @@
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
         select, textarea {
             margin: 10px;
             padding: 10px;
@@ -33,7 +30,6 @@
             border: 1px solid #ccc;
             font-size: 14px;
         }
-
         button {
             padding: 10px 20px;
             background-color: #007bff;
@@ -43,11 +39,9 @@
             border-radius: 5px;
             font-size: 16px;
         }
-
         button:hover {
             background-color: #0056b3;
         }
-
         .result-text {
             margin-top: 20px;
             padding: 10px;
@@ -63,7 +57,6 @@
             overflow-y: auto;
             border: 1px solid #ccc;
         }
-
         .error {
             color: red;
         }
@@ -71,43 +64,49 @@
 </head>
 <body>
 
-    <h1>Language Translator</h1>
-    <div class="container">
-        <form action="/translate" method="get">
-            <label for="source_language">Source Language:</label>
-            <select id="source_language" name="source_language" required>
-                {% for language in languages %}
-                    <option value="{{ language }}" {% if language == source_language %} selected {% endif %}>
-                        {{ language }}
-                    </option>
-                {% endfor %}
-            </select><br>
+<h1>Language Translator</h1>
+<div class="container">
+    <form action="/translate" method="get">
+        <label for="source_language">Source Language:</label>
+        <select id="source_language" name="source_language" required>
+            {% for language in languages %}
+                <option value="{{ language }}" {% if language == source_language %} selected {% endif %}>
+                    {{ language }}
+                </option>
+            {% endfor %}
+        </select><br>
 
-            <label for="target_language">Target Language:</label>
-            <select id="target_language" name="target_language" required>
-                {% for language in languages %}
-                    <option value="{{ language }}" {% if language == target_language %} selected {% endif %}>
-                        {{ language }}
-                    </option>
-                {% endfor %}
-            </select><br>
+        <label for="target_language">Target Language:</label>
+        <select id="target_language" name="target_language" required>
+            {% for language in languages %}
+                <option value="{{ language }}" {% if language == target_language %} selected {% endif %}>
+                    {{ language }}
+                </option>
+            {% endfor %}
+        </select><br>
 
-            <label for="text_to_translate">Enter Text:</label><br>
-            <textarea id="text_to_translate" name="text_to_translate" rows="4" required></textarea><br><br>
+        <label for="text_to_translate">Enter Text:</label><br>
+        <textarea id="text_to_translate" name="text_to_translate" rows="4" required></textarea><br><br>
 
-            <button type="submit">Translate</button>
-        </form>
+        <button type="submit">Translate</button>
+    </form>
 
-        {% if translated_text %}
-            <label for="translated_text_area">Translation:</label>
-            <textarea id="translated_text_area" rows="4" readonly>{{ translated_text }}</textarea>
-        {% elif error %}
-            <div class="result-text error">
-                <strong>Error:</strong><br>
-                {{ error }}
-            </div>
-        {% endif %}
-    </div>
+    {% if translated_text %}
+        <label for="translated_text_area">Translation:</label>
+        <textarea id="translated_text_area" rows="4" readonly>{{ translated_text }}</textarea><br>
+
+        <label>Listen to Translation:</label>
+        <audio controls>
+            <source src="{{ url_for('static', filename='translated_audio.mp3') }}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+    {% elif error %}
+        <div class="result-text error">
+            <strong>Error:</strong><br>
+            {{ error }}
+        </div>
+    {% endif %}
+</div>
 
 </body>
 </html>
