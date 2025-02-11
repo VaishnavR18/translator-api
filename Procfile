@@ -1,1 +1,1 @@
-web: gunicorn -k gevent --workers 1 --timeout 300 app:app
+web: gunicorn --workers 3 --timeout 60 -b 0.0.0.0:$PORT app:app

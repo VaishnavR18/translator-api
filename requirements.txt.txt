@@ -1,5 +1,6 @@
-Flask==2.2.2
 googletrans==4.0.0-rc1
+gtts==2.2.3
+Flask==2.2.2
 gunicorn==20.1.0
-gtts==2.0.3
 werkzeug==2.2.3
+requests==2.26.0  # Add this if it's missing
